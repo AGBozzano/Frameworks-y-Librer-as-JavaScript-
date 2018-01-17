@@ -1,7 +1,22 @@
 
+function InsertarDulces(){
+
+	var top = 7;
+
+	$("[class^='col']").each(function(){
+		var candys= $(this).children().length;
+		var agregar= top-candys;
+		for (var i = 0; i < agregar; i++){
+			var tipoDulce= Math.floor((Math.random()*4)+1);
+			$(this).prepend('<img src="image/' + tipoDulce+ '.png" class="elemento"></img>');
+		}
+	});
+}
+
+
 function CambiarColor(){
 
-	var time1 = Math.round(Math.random() * (600 - 100) + 100);
+	var time1 = Math.round(Math.random() * (600 - 100) + 1000);
 	var time2 = Math.round(Math.random() * (600 - 100) + 100);
 
 	$(".main-titulo").animate({'color':'white'}, time1, function(){
@@ -11,42 +26,10 @@ function CambiarColor(){
   	});
 }
   
-
-function ReiniciarJuego(verifica) {
-
-  clearTimeout(temporizador);
-  $(".btn-reinicio").text("Iniciar");
- 
-  if (verifica) {
-
-    $(".panel-tablero").show("slow");
-    $(".panel-score").animate({
-        width: "-=50"
-      }, 1000
-    );
-    verifica=false;
-  };
-}
-
-var tiempoAtras;
-
-var min;
-
-var seg;
-
-var temporizador;
-
-var verifica = false;
-
 function FinalizarJuego() {
-
-  clearTimeout(temporizador);
-  $(".panel-tablero").hide("slow");
-  $(".panel-score").animate({
-      width: "+=%50"
-    }, 1000
-  );
-  verifica=true;
+  $(".panel-tablero").hide("slow",function(){
+  	$(".panel-score").animate({width: "100%"}, 1000);
+  });
 }
 
 
@@ -55,22 +38,12 @@ $(".btn-reinicio").on("click", function(){
   var nombre =$(".btn-reinicio").text();
   if (nombre=="Iniciar") {
     $(".btn-reinicio").text("Reiniciar");
-    clearTimeout(temporizador);
+
+    IniciarConteo();
+	InsertarDulces();
   }else{
-    ReiniciarJuego(verifica);
+    location.reload(true)
   }
-
-  min =0;
-  seg =0;
-
-  $(".elemento").remove('img');
-  $('#score-text').text("0");
-  $('#movimientos-text').text("0");
-
-  updateReloj();
-
-  CaidaDeDulces();
-
 });
 
 $(function() {

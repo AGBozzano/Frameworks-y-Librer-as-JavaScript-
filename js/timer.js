@@ -1,4 +1,10 @@
-function updateReloj() {
+var tiempoAtras;
+var min=0;
+var seg=0;
+var temporizador;
+var verifica = false;
+
+function IniciarConteo() {
 
   var number = document.getElementById('timer');
   var hora = 0;
@@ -16,7 +22,7 @@ function updateReloj() {
     tiempoAtras= (hora < 10) ? hora :hora;
     tiempoAtras+= ((minutos < 10) ? ":0" : ":") +(minutos) ;
     tiempoAtras+= ((segundos < 10) ? ":0" : ":") +  (segundos);
-    temporizador = setTimeout("updateReloj()",1000);
+    temporizador = setTimeout("IniciarConteo()",1000);
   }
 
   if (seg==59) {
