@@ -1,3 +1,15 @@
+function InicioDulces(){
+
+	do{
+		InsertarDulces();
+		validar();
+		$("img[name=delete]").remove();
+		InsertarDulces();
+		validar();
+	}while($('img[name="delete"]').length != 0);
+
+}
+
 
 function InsertarDulces(){
 
@@ -11,8 +23,8 @@ function InsertarDulces(){
 			$(this).prepend('<img src="image/' + tipoDulce+ '.png" class="elemento"></img>');
 		}
 	});
-	addCandyEvents();
 
+	addCandyEvents();
 }
 
 function addCandyEvents() {
@@ -63,38 +75,50 @@ function swapCandy(event, candyDrag) {
 	candyDrop.attr('src', dragSrc);
 
 
-	setTimeout(function () {
+	
 		validar();
 		// De esta manera, impedimos movimientos equivocados
-		if ($('img.delete').length === 0) {
+		if ($('img[name="delete"]').length === 0) {
 			// Caramelo Arrastrar y caramelo Drop se les da su src inicial
 			candyDrag.attr('src', dragSrc);
 			candyDrop.attr('src', dropSrc);
 		} else {
 			actualizarMov();
-			actualizarPun();
-			eliminarDulces();
+
+			do{
+				actualizarPun();
+				eliminarDulces();
+				InsertarDulces();				
+				validar();
+			}while($('img[name="delete"]').length != 0);
 		}
-	}, 500);
+	
 }
 
 //Contabiliza un movimiento
 function actualizarMov(){
 	var MovActuales= Number($('#movimientos-text').text());
 	var total = MovActuales + 1;
-	$('#movimientos-text').text(result);
+	$('#movimientos-text').text(total);
 }
 function actualizarPun(){
   var p_Actual = Number($('#score-text').text());
-  var p_Nuevos = $('img.delete').length * 5;
+  var p_Nuevos = $('img[name="delete"]').length * 5;
   var resultado = p_Actual + p_Nuevos;
-  $('#score-text').text(resultados);
+  $('#score-text').text(resultado);
 }
 function eliminarDulces(){
-	disableCandyEvents();
-	$(".delete").fadeTo(300,0).fadeTo(300,1).fadeTo(300,0).fadeTo(300,1).hide(300);
-	$(".delete").remove();
+
+	setTimeout(function(){
+		$("img[name=delete]").fadeTo(250,0.1).fadeTo(250,1).fadeTo(250,0.1).hide(250);
+		$("img[name=delete]").remove();
+	}, 1000);
+	
+	
+	
 }
+
+
 function validar(){
 	validarCol();
 	validarRow();
@@ -102,13 +126,37 @@ function validar(){
 function validarCol(){
 
 	for(var col=1; col < 8; col++){
+		
 		for(var row=0; row < 5; row++){
-			var Dulce1=$(".col-"+col).children('img')[row].src;
-			var Dulce2=$(".col-"+col).children('img')[row+1].src;
-			var Dulce3=$(".col-"+col).children('img')[row+2].src;
+			
+			let Dulce1 = $(".col-"+col).children('img')[row];
+			let Dulce2 = $(".col-"+col).children('img')[row+1];
+			let Dulce3 = $(".col-"+col).children('img')[row+2];
 
-			if(Dulce1 == Dulce2 && Dulce1 == Dulce3){
-				
+			if((Dulce1.src == Dulce2.src) && (Dulce1.src == Dulce3.src)){
+
+				Dulce1.name = "delete";
+				Dulce2.name = "delete";
+				Dulce3.name = "delete"; 
+
+			}
+		}
+	}
+}
+function validarRow(){
+
+	for(var row=0; row < 7; row++){
+		for(var col=1; col < 6; col++){
+			let Dulce1=$(".col-"+col).children('img')[row];
+			let Dulce2=$(".col-"+(col+1)).children('img')[row];
+			let Dulce3=$(".col-"+(col+2)).children('img')[row];		
+
+
+			if((Dulce1.src == Dulce2.src) && (Dulce1.src == Dulce3.src)){
+				Dulce1.name = "delete";
+				Dulce2.name = "delete";
+				Dulce3.name = "delete"; 
+
 			}
 		}
 	}
@@ -141,7 +189,7 @@ $(".btn-reinicio").on("click", function(){
     $(".btn-reinicio").text("Reiniciar");
 
     IniciarConteo();
-	InsertarDulces();
+	InicioDulces();
   }else{
     location.reload(true)
   }
