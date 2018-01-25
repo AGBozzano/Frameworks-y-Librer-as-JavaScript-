@@ -1,3 +1,7 @@
+var I_animacion = false;
+
+//Funcion necesaria para inicializar el tablero sin jugadas previas ni alterar el
+//marcador desde el inicio
 function InicioDulces(){
 
 	do{
@@ -7,10 +11,11 @@ function InicioDulces(){
 		InsertarDulces();
 		validar();
 	}while($('img[name="delete"]').length != 0);
+	I_animacion = true;
 
 }
 
-
+//Inserta nuevos dulces al tablero
 function InsertarDulces(){
 
 	var top = 7;
@@ -20,13 +25,24 @@ function InsertarDulces(){
 		var agregar= top-candys;
 		for (var i = 0; i < agregar; i++){
 			var tipoDulce= Math.floor((Math.random()*4)+1);
-			$(this).prepend('<img src="image/' + tipoDulce+ '.png" class="elemento"></img>');
+			if(I_animacion==true){
+				$(this).prepend('<img src="image/' + tipoDulce+ '.png" class="elemento caida"></img>');	
+			}else{
+				$(this).prepend('<img src="image/' + tipoDulce+ '.png" class="elemento"></img>');
+			}
+
+			
 		}
 	});
-
+	//Solo anima los nuevos dulces una vez iniciado el juego
+	if(I_animacion==true){
+		animar_caida();
+	}
 	addCandyEvents();
+	
 }
 
+//Asigna propiedadres del Drag and Drop y otras funciones.
 function addCandyEvents() {
 
 	$('img').draggable({
@@ -46,16 +62,19 @@ function addCandyEvents() {
 	enableCandyEvents();
 }
 
+//Deshabilita las opciones de drag and drop para que no interumpa con las acciones de delete
 function disableCandyEvents() {
 	$('img').draggable('disable');
 	$('img').droppable('disable');
 }
 
+//Habilita las opciones de drag and drop
 function enableCandyEvents() {
 	$('img').draggable('enable');
 	$('img').droppable('enable');
 }
 
+//Asigna los parametros limites del movimiento de los dulces
 function constrainCandyMovement(event, candyDrag) {
 	candyDrag.position.top = Math.min(100, candyDrag.position.top);
 	candyDrag.position.bottom = Math.min(100, candyDrag.position.bottom);
@@ -83,8 +102,10 @@ function swapCandy(event, candyDrag) {
 			candyDrag.attr('src', dragSrc);
 			candyDrop.attr('src', dropSrc);
 		} else {
+			//Agrego 1 mov
 			actualizarMov();
 
+			//realiza acciones hasta que no hayan mas movimientos acertados
 			do{
 				actualizarPun();
 				eliminarDulces();
@@ -101,28 +122,54 @@ function actualizarMov(){
 	var total = MovActuales + 1;
 	$('#movimientos-text').text(total);
 }
+
+//Contabiliza la puntuacion
 function actualizarPun(){
   var p_Actual = Number($('#score-text').text());
   var p_Nuevos = $('img[name="delete"]').length * 5;
   var resultado = p_Actual + p_Nuevos;
   $('#score-text').text(resultado);
 }
+
+//Intento de animacion de tintineo
 function eliminarDulces(){
 
-	setTimeout(function(){
-		$("img[name=delete]").fadeTo(250,0.1).fadeTo(250,1).fadeTo(250,0.1).hide(250);
-		$("img[name=delete]").remove();
-	}, 1000);
-	
-	
-	
+	//Intente mil maneras de animar a los dulces marcados con delete, tanto en la clase como en "name"
+	//Intente enviar los datos a otra funcion y desde hay hacer las animaciones, pero nada
+	//Por alguna razon que no conosco ni tampoco un par de sus tutores, las animaciones no se realiza
+	//odio entregar las cosas sin terminarlas 100%, pero ya estoy cansado estuve casi 1 mes con esto
+	//los videos son muy simples y al momento de final todo se vuelve super complicado...
+	//saludos.......................................................................
+
+	//$("img[name=delete]").fadeTo(250,0.1).fadeTo(250,1).fadeTo(250,0.1).fadeTo(250,1).hide();
+	//$("img[name=delete]").animate({opacity:0},250).animate({opacity:1},250).animate({opacity:0},250);
+	//$("img[name=delete]").remove("pulsate",1000);
+	//$("img[name=delete]").hide("pulsate",1000).remove();
+	//var dulces = $("img[name=delete]");
+
+	//$("img[name=delete]").addClass("delete");
+	//$(".delete").fadeTo(250,0.1).fadeTo(250,1).fadeTo(250,0.1).fadeTo(250,1).hide();
+
+	$("img[name=delete]").fadeTo(250,0.1).fadeTo(250,1).fadeTo(250,0.1).fadeTo(250,1).hide();
+	$("img[name=delete]").remove();
+
 }
 
 
+//Anima la caida simulando gravedad descendente
+function animar_caida(){
+	$(".caida").animate({top:-500},0).animate({top:0},"slow");
+	$(".caida").removeClass("caida");
+
+}
+
+//Comienza con las validaciones
 function validar(){
 	validarCol();
 	validarRow();
 }
+
+//Valida verticalmente tomando de a 3 dulces y agregando name="delete"
 function validarCol(){
 
 	for(var col=1; col < 8; col++){
@@ -143,6 +190,8 @@ function validarCol(){
 		}
 	}
 }
+
+//Valida horizontalmente tomando de a 3 dulces y agregando name="delete"
 function validarRow(){
 
 	for(var row=0; row < 7; row++){
@@ -178,6 +227,8 @@ function CambiarColor(){
 function FinalizarJuego() {
   $(".panel-tablero").hide("slow",function(){
   	$(".panel-score").animate({width: "100%"}, 1000);
+  	$(".main-titulo").text("Game Over");
+  	$(".main-titulo").css("text-align","center");
   });
 }
 
